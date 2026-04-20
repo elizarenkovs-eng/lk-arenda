@@ -1,5 +1,4 @@
-const { findContactByPhone, getClientContract, getManager } = require('./_bitrix');
-const { parseAddress } = require('./_bitrix');
+const { findContactByPhone, getClientContract, getManager, parseAddress } = require('./_bitrix');
 
 module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
