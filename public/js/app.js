@@ -43,7 +43,8 @@ async function sendOTP() {
   document.querySelector('#step-phone .btn-primary').disabled = true;
 
   try {
-    await post('send-otp', { phone });
+const result = await post('send-otp', { phone });
+expectedCode = result.testCode;
     document.getElementById('phone-display').textContent = phone;
     document.getElementById('step-phone').style.display = 'none';
     document.getElementById('step-sms').style.display = 'block';
@@ -66,7 +67,7 @@ async function verifyOTP() {
   document.querySelector('#step-sms .btn-primary').disabled = true;
 
   try {
-    const data = await post('verify-otp', { phone, code });
+    const data = await post('verify-otp', { phone, code, expectedCode });
     clientData = data;
     renderDashboard(data);
     document.getElementById('screen-login').classList.remove('active');
