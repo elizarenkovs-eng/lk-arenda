@@ -1,0 +1,7 @@
+{
+  "name": "lk-arenda",
+  "version": "1.0.0",
+  "description": "Личный кабинет арендатора",
+  "engines": { "node": "18.x" },
+  "dependencies": {}
+}

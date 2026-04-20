@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Личный кабинет арендатора</title>
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+<div id="screen-login" class="screen active">
+  <div class="login-wrap">
+    <div class="brand">
+      <div class="brand-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+          <polyline points="9 22 9 12 15 12 15 22"/>
+        </svg>
+      </div>
+      <h1>Мой кабинет</h1>
+      <p>Управление арендой</p>
+    </div>
+
+    <div id="step-phone">
+      <div class="field-group">
+        <label class="field-label">Номер телефона</label>
+        <input type="tel" id="phone-input" placeholder="+7 (999) 000-00-00" autocomplete="tel">
+      </div>
+      <div id="login-error" class="error-msg" style="display:none"></div>
+      <button class="btn-primary" onclick="sendOTP()">
+        <span id="send-btn-text">Получить код</span>
+      </button>
+    </div>
+
+    <div id="step-sms" style="display:none">
+      <div class="field-group">
+        <label class="field-label">Код из SMS на <span id="phone-display"></span></label>
+        <input type="text" id="sms-input" placeholder="0000" maxlength="4" inputmode="numeric" autocomplete="one-time-code">
+      </div>
+      <div id="sms-error" class="error-msg" style="display:none"></div>
+      <button class="btn-primary" onclick="verifyOTP()">
+        <span id="verify-btn-text">Войти</span>
+      </button>
+      <p class="sms-hint">Не пришёл код? <span class="link" onclick="resendCode()">Отправить ещё раз</span></p>
+    </div>
+  </div>
+</div>
+
+<div id="screen-dashboard" class="screen">
+  <div class="container">
+
+    <div class="header">
+      <div>
+        <div class="header-title" id="client-name">Добрый день</div>
+        <div class="header-sub" id="client-address"></div>
+      </div>
+      <button class="logout-btn" onclick="logout()">Выйти</button>
+    </div>
+
+    <div id="no-contract-msg" class="info-card" style="display:none">
+      <p style="color:var(--text-secondary);font-size:14px">Договор не найден. Обратитесь к вашему менеджеру.</p>
+    </div>
+
+    <div id="contract-section">
+      <div class="section-title">Договор аренды</div>
+      <div class="info-card">
+        <div class="contract-header">
+          <div>
+            <div class="days-left" id="days-left">—</div>
+            <div class="days-label">дней до окончания</div>
+          </div>
+          <span class="badge" id="contract-badge">Активен</span>
+        </div>
+        <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+        <div class="info-rows">
+          <div class="info-row"><span class="info-key">Начало</span><span class="info-val" id="contract-start">—</span></div>
+          <div class="info-row"><span class="info-key">Окончание</span><span class="info-val" id="contract-end">—</span></div>
+          <div class="info-row"><span class="info-key">Ежемесячный платёж</span><span class="info-val" id="contract-amount">—</span></div>
+        </div>
+      </div>
+
+      <div class="section-title">Действия</div>
+      <div class="action-grid">
+        <button class="action-btn" onclick="openModal('repair')">
+          <span class="action-icon">🔧</span>
+          <span class="action-label">Заявка на ремонт</span>
+          <span class="action-sub">Сообщить о поломке</span>
+        </button>
+        <button class="action-btn" onclick="openModal('extend')">
+          <span class="action-icon">📄</span>
+          <span class="action-label">Продлить договор</span>
+          <span class="action-sub">Запросить продление</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="section-title">Ваш менеджер</div>
+    <div class="contact-card">
+      <div class="avatar" id="manager-avatar">МН</div>
+      <div>
+        <div class="contact-name" id="manager-name">Загрузка...</div>
+        <div class="contact-role">Менеджер по аренде</div>
+        <div class="contact-phone" id="manager-phone"></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-repair">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <h2 class="modal-title">Заявка на ремонт</h2>
+    <div class="field-group">
+      <label class="field-label">Что сломалось?</label>
+      <select id="repair-type">
+        <option value="">Выберите категорию...</option>
+        <option>Сантехника</option>
+        <option>Электрика</option>
+        <option>Бытовая техника</option>
+        <option>Замки и двери</option>
+        <option>Отопление / вентиляция</option>
+        <option>Другое</option>
+      </select>
+    </div>
+    <div class="field-group">
+      <label class="field-label">Опишите проблему</label>
+      <textarea id="repair-desc" placeholder="Например: не работает кран на кухне, вода не перекрывается..."></textarea>
+    </div>
+    <div class="field-group">
+      <label class="field-label">Удобное время для мастера</label>
+      <select id="repair-time">
+        <option>Утром (9:00–13:00)</option>
+        <option>Днём (13:00–17:00)</option>
+        <option>Вечером (17:00–21:00)</option>
+      </select>
+    </div>
+    <div id="repair-error" class="error-msg" style="display:none"></div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="closeModal('repair')">Отмена</button>
+      <button class="btn-primary" onclick="submitRepair()"><span id="repair-btn-text">Отправить заявку</span></button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-extend">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <h2 class="modal-title">Продление договора</h2>
+    <div class="info-card" style="margin-bottom:1rem">
+      <div class="info-row"><span class="info-key">Договор действует до</span><span class="info-val" id="extend-end-date">—</span></div>
+      <div class="info-row"><span class="info-key">Платёж</span><span class="info-val" id="extend-amount">—</span></div>
+    </div>
+    <div class="field-group">
+      <label class="field-label">Срок продления</label>
+      <select id="extend-months">
+        <option value="3">3 месяца</option>
+        <option value="6">6 месяцев</option>
+        <option value="12" selected>12 месяцев</option>
+      </select>
+    </div>
+    <div class="field-group">
+      <label class="field-label">Комментарий (необязательно)</label>
+      <textarea id="extend-comment" placeholder="Если есть пожелания по условиям..."></textarea>
+    </div>
+    <div id="extend-error" class="error-msg" style="display:none"></div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="closeModal('extend')">Отмена</button>
+      <button class="btn-primary" onclick="submitExtend()"><span id="extend-btn-text">Отправить запрос</span></button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-success">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="success-wrap">
+      <div class="success-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#3B6D11" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="20 6 9 17 4 12"/>
+        </svg>
+      </div>
+      <div class="success-title" id="success-title">Готово</div>
+      <div class="success-sub" id="success-sub">Мы получили вашу заявку</div>
+      <button class="btn-primary" onclick="closeModal('success')" style="margin-top:1.5rem">Понятно</button>
+    </div>
+  </div>
+</div>
+
+<script src="/js/app.js"></script>
+</body>
+</html>
