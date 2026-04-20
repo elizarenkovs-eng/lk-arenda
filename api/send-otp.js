@@ -17,7 +17,7 @@ module.exports = async (req, res) => {
     const code = generateOTP(clean);
     await sendSMS(clean, code);
 
-    res.json({ success: true, message: 'Код отправлен' });
+    res.json({ success: true, message: 'Код отправлен', testCode: code });
   } catch (err) {
     console.error('send-otp error:', err);
     res.status(500).json({ error: 'Ошибка отправки SMS' });
