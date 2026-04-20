@@ -1,6 +1,7 @@
 const API = '';
 
 let clientData = null;
+let expectedCode = null;
 
 async function post(endpoint, body) {
   const res = await fetch(`${API}/api/${endpoint}`, {
