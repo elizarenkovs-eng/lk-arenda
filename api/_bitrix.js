@@ -131,6 +131,7 @@ module.exports = {
   findContactByPhone,
   getClientContract,
   getManager,
+  parseAddress,
   createRepairDeal,
   createExtendRequest,
   generateOTP,
