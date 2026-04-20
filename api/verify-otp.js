@@ -1,4 +1,5 @@
-const { verifyOTP, findContactByPhone, getClientContract, getManager } = require('./_bitrix');
+const { findContactByPhone, getClientContract, getManager } = require('./_bitrix');
+const { parseAddress } = require('./_bitrix');
 
 module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -8,14 +9,11 @@ module.exports = async (req, res) => {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
   try {
-    const { phone, code } = req.body;
+    const { phone, code, expectedCode } = req.body;
     if (!phone || !code) return res.status(400).json({ error: 'Телефон и код обязательны' });
+    if (code !== expectedCode) return res.status(401).json({ error: 'Неверный код' });
 
     const clean = phone.replace(/\D/g, '');
-
-    if (!verifyOTP(clean, code)) {
-      return res.status(401).json({ error: 'Неверный или истёкший код' });
-    }
 
     const contact = await findContactByPhone(clean);
     if (!contact) {
@@ -35,7 +33,6 @@ module.exports = async (req, res) => {
       daysLeft = Math.ceil(diff / (1000 * 60 * 60 * 24));
     }
 
-    const { parseAddress } = require('./_bitrix');
     const address = contract ? parseAddress(contract) : null;
 
     res.json({
@@ -48,7 +45,7 @@ module.exports = async (req, res) => {
       contract: contract ? {
         id: contract.id,
         title: contract.title,
-        address: address,
+        address,
         startDate: contractStart ? new Date(contractStart).toLocaleDateString('ru-RU') : null,
         endDate: contractEnd ? new Date(contractEnd).toLocaleDateString('ru-RU') : null,
         daysLeft,
